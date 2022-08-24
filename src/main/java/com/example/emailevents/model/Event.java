@@ -10,17 +10,19 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 /**
- * Event entity to model email events
+ * Event entity to model email events.
+ * Fields:
+ *  id: UUID => Event primary key ID of type Universally Unique Identifier.
+ *              Here Hibernate annotation are being used to avoid collision when creating a random ID.
+ *  action: String => Actions that represent an event limited to "click" and "open"
+ *  subject: String => Subject title of a email.
+ *  recipient: String => email address
+ *  timestamp: LocalDateTime => time & data of event triggered
  */
 @Entity
 @Table(name = "event")
 public class Event {
 
-    /**
-     * Event primary key ID of type Universally Unique Identifier.
-     * Here Hibernate annotation are being used to avoid collision
-     * when creating a random ID.
-     */
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(
