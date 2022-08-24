@@ -4,10 +4,11 @@ server:
 
 spring:
   datasource:
-    url: jdbc:h2:file:./h2db/h2file
+    url: jdbc:h2:file:./src/main/resources/db/email-event-db
     username: sa
     password: password
     driverClassName: org.h2.Driver
+
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
     show-sql: false
@@ -20,7 +21,10 @@ spring:
         jdbc:
           lob:
             non_contextual_creation: true
+    defer-datasource-initialization: true
 
   sql:
     init:
       mode: always
+      schema-locations: classpath:db/schema/email-events-schema.sql
+      data-locations: classpath:db/data/import.sql
