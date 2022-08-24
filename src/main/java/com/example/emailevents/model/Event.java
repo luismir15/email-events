@@ -1,5 +1,6 @@
 package com.example.emailevents.model;
 
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
@@ -19,6 +20,12 @@ import java.util.UUID;
  *  recipient: String => email address
  *  timestamp: LocalDateTime => time & data of event triggered
  */
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
+@EqualsAndHashCode
 @Entity
 @Table(name = "event")
 public class Event {
