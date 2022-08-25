@@ -11,26 +11,18 @@ public interface EventService {
      * Insert new events
      * @param event Event
      */
-    public Event insertEvent(Event event);
+     Event insertEvent(Event event);
 
     /**
-     * Get events by action type
-     * @param action type of click or open
-     * @return list of Event
+     * Find event based on Model passed
+     * @param event obj
+     * @return Lisr of Event
      */
-    public List<Event> getEventsByAction(String action);
+     List<Event> getEvents(Event event);
 
     /**
-     * Get events by recipient email address
-     * @param recipient email address
-     * @return list of Event
+     * Get all events
+     * @return List of Events
      */
-    public List<Event> getEventsByRecipient(String recipient);
-
-    /**
-     * Get events by local date/time
-     * @param timestamp date and time of event
-     * @return List of Event
-     */
-    public List<Event> getEventsByTimestamp(LocalDateTime timestamp);
+     List<Event> getAllEvents();
 }
