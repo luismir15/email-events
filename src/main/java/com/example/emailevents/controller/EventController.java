@@ -1,6 +1,7 @@
 package com.example.emailevents.controller;
 
 import com.example.emailevents.model.Event;
+import com.example.emailevents.model.Summary;
 import com.example.emailevents.service.EventService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +54,20 @@ public class EventController {
 
         return eventService.getEvents(event);
     }
+
+   @GetMapping(value = "/summary")
+   public Summary getEventSummary(
+           @RequestParam(required = false) String action,
+           @RequestParam(required = false) String recipient,
+           @RequestParam(required = false) String timestamp
+   ) {
+        List<Event> eventListSummary = getEvents(action, recipient, timestamp);
+        if (eventListSummary.isEmpty()) {
+            return null;
+        }
+
+        return eventService.getEventSummary(eventListSummary);
+   }
 
     @GetMapping(value = "/events/all")
     public List<Event> getAllEvents() {

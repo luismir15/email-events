@@ -1,6 +1,7 @@
 package com.example.emailevents.service;
 
 import com.example.emailevents.model.Event;
+import com.example.emailevents.model.Summary;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,4 +26,6 @@ public interface EventService {
      * @return List of Events
      */
      List<Event> getAllEvents();
+
+     Summary getEventSummary(List<Event> eventList);
 }

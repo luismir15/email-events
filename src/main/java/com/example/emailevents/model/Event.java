@@ -58,4 +58,7 @@ public class Event {
     @Column(name = "event_timestamp", updatable = false, nullable = false)
     @CreationTimestamp
     private LocalDateTime timestamp;
+
+    @Transient
+    private Summary summary;
 }
