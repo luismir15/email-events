@@ -21,6 +21,11 @@ public class EventController {
         this.eventService = eventService;
     }
 
+    /**
+     * TODO: add response entity
+     * @param event
+     * @return
+     */
     @PostMapping(value = "/events")
     public Event addEvent(@RequestBody Event event) {
 
@@ -37,15 +42,13 @@ public class EventController {
     ) {
 
         Event event = new Event();
+        event.setAction(action);
+        event.setRecipient(recipient);
 
-        if (!StringUtils.isBlank(action) || !StringUtils.isBlank(recipient)) {
-            if (!StringUtils.isBlank(timestamp)) {
-                String updatedTimestampString = timestamp.replace('T', ' ');
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SS");
-                event.setTimestamp(LocalDateTime.parse(updatedTimestampString, formatter));
-            }
-            event.setAction(action);
-            event.setRecipient(recipient);
+        if (!StringUtils.isBlank(timestamp)) {
+            String updatedTimestampString = timestamp.replace('T', ' ');
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SS");
+            event.setTimestamp(LocalDateTime.parse(updatedTimestampString, formatter));
         }
 
         return eventService.getEvents(event);
