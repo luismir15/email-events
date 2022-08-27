@@ -1,10 +1,13 @@
 package com.example.emailevents.controller;
 
 import com.example.emailevents.model.Event;
+import com.example.emailevents.model.Message;
 import com.example.emailevents.model.Summary;
 import com.example.emailevents.service.EventService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -17,22 +20,46 @@ public class EventController {
 
     private final EventService eventService;
 
+    /**
+     * Constructor autowiring
+     * @param eventService interface autowired
+     */
     @Autowired
     public EventController(EventService eventService) {
         this.eventService = eventService;
     }
 
     /**
-     * TODO: add response entity
-     * @param event
-     * @return
+     * Add incoming events
+     *
+     * @param event obj from client request.
+     * @return response entity
      */
     @PostMapping(value = "/events")
-    public Event addEvent(@RequestBody Event event) {
+    public ResponseEntity<Message> addEvent(@RequestBody(required = false) Event event) {
+
+        if (event == null || StringUtils.isBlank(event.getAction()) || StringUtils.isBlank(event.getRecipient())) {
+            return new ResponseEntity<>(
+                    new Message("request body is null or make sure that you added action and recipient"),
+                    HttpStatus.BAD_REQUEST
+            );
+        }
 
         event.setTimestamp(LocalDateTime.now());
 
-        return eventService.insertEvent(event);
+        Event validatedEvent = eventService.insertEvent(event);
+
+        if (validatedEvent == null) {
+            return new ResponseEntity<>(
+                    new Message("request body is null or make sure that you added action and recipient"),
+                    HttpStatus.BAD_REQUEST
+            );
+        }
+
+        return new ResponseEntity<>(
+                new Message("successfully added event", event),
+                HttpStatus.OK
+        );
     }
 
     @GetMapping(value = "/events")
@@ -68,11 +95,4 @@ public class EventController {
 
         return eventService.getEventSummary(eventListSummary);
    }
-
-    @GetMapping(value = "/events/all")
-    public List<Event> getAllEvents() {
-
-        return eventService.getAllEvents();
-    }
-
 }

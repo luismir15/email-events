@@ -21,11 +21,5 @@ public interface EventService {
      */
      List<Event> getEvents(Event event);
 
-    /**
-     * Get all events
-     * @return List of Events
-     */
-     List<Event> getAllEvents();
-
      Summary getEventSummary(List<Event> eventList);
 }

@@ -1,5 +1,6 @@
 package com.example.emailevents.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
@@ -49,7 +50,7 @@ public class Event {
     @Column(name = "event_action", updatable = false, nullable = false)
     private String action;
 
-    @Column(name = "event_subject", updatable = false, nullable = false)
+    @Column(name = "event_subject", updatable = false, nullable = true)
     private String subject;
 
     @Column(name = "event_recipient", updatable = false, nullable = false)
@@ -60,5 +61,6 @@ public class Event {
     private LocalDateTime timestamp;
 
     @Transient
+    @JsonIgnore
     private Summary summary;
 }

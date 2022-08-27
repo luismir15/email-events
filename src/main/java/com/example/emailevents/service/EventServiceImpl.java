@@ -30,7 +30,10 @@ public class EventServiceImpl implements EventService {
     @Override
     public Event insertEvent(Event event) {
 
-        return eventRepo.save(event);
+        if (validateFields(event))
+            return eventRepo.save(event);
+        else
+            return null;
     }
 
     /**
@@ -46,17 +49,6 @@ public class EventServiceImpl implements EventService {
             return eventRepo.findAll(Example.of(event));
         else
             return null;
-    }
-
-    /**
-     * Get all events
-     *
-     * @return List of Events
-     */
-    @Override
-    public List<Event> getAllEvents() {
-
-        return eventRepo.findAll();
     }
 
     /**
