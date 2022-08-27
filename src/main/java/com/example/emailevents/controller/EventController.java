@@ -13,12 +13,15 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("api/email")
 public class EventController {
 
     private final EventService eventService;
+
+    private List<Event> eventList;
 
     /**
      * Constructor autowiring
@@ -63,36 +66,43 @@ public class EventController {
     }
 
     @GetMapping(value = "/events")
-    public List<Event> getEvents(
+    public ResponseEntity<Message> getEvents(
             @RequestParam(required = false) String action,
             @RequestParam(required = false) String recipient,
             @RequestParam(required = false) String timestamp
     ) {
 
-        Event event = new Event();
-        event.setAction(action);
-        event.setRecipient(recipient);
+        List<Event> filteredEventList = eventService.getEvents(action, recipient, timestamp);
 
-        if (!StringUtils.isBlank(timestamp)) {
-            String updatedTimestampString = timestamp.replace('T', ' ');
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SS");
-            event.setTimestamp(LocalDateTime.parse(updatedTimestampString, formatter));
+        if (filteredEventList == null) {
+            return new ResponseEntity<>(
+                    new Message("please review query params input"),
+                    HttpStatus.BAD_REQUEST
+            );
         }
 
-        return eventService.getEvents(event);
+        return new ResponseEntity<>(new Message(filteredEventList), HttpStatus.OK);
     }
 
    @GetMapping(value = "/summary")
-   public Summary getEventSummary(
+   public ResponseEntity<Message> getEventSummary(
            @RequestParam(required = false) String action,
            @RequestParam(required = false) String recipient,
            @RequestParam(required = false) String timestamp
    ) {
-        List<Event> eventListSummary = getEvents(action, recipient, timestamp);
-        if (eventListSummary.isEmpty()) {
-            return null;
+        List<Event> eventListSummary = Objects.requireNonNull(getEvents(action, recipient, timestamp).getBody()).getEventList();
+        if (eventListSummary == null || eventListSummary.isEmpty()) {
+            return new ResponseEntity<>(
+                    new Message("please review query params"),
+                    HttpStatus.BAD_REQUEST
+            );
         }
 
-        return eventService.getEventSummary(eventListSummary);
+        Summary summary = eventService.getEventSummary(eventListSummary);
+
+        return new ResponseEntity<>(
+                new Message(summary),
+                HttpStatus.OK
+        );
    }
 }

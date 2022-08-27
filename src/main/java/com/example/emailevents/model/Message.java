@@ -21,6 +21,8 @@ public class Message {
 
     private List<Event> eventList;
 
+    private Summary summary;
+
     public Message(String message) {
         this.message = message;
     }
@@ -30,8 +32,11 @@ public class Message {
         this.event = event;
     }
 
-    public Message(String message, List<Event> eventList) {
-        this.message = message;
+    public Message(List<Event> eventList) {
         this.eventList = eventList;
+    }
+
+    public Message(Summary summary) {
+        this.summary = summary;
     }
 }

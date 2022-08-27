@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -37,13 +39,25 @@ public class EventServiceImpl implements EventService {
     }
 
     /**
-     * Find event based on Model passed
+     * Get event based on filters
      *
-     * @param event obj
-     * @return List of Event
+     * @param action    click or open
+     * @param recipient client email
+     * @param timestamp date and time of event
+     * @return
      */
     @Override
-    public List<Event> getEvents(Event event) {
+    public List<Event> getEvents(String action, String recipient, String timestamp) {
+
+        Event event = new Event();
+        event.setAction(action);
+        event.setRecipient(recipient);
+
+        if (!StringUtils.isBlank(timestamp)) {
+            String updatedTimestampString = timestamp.replace('T', ' ');
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SS");
+            event.setTimestamp(LocalDateTime.parse(updatedTimestampString, formatter));
+        }
 
         if (validateFields(event))
             return eventRepo.findAll(Example.of(event));
