@@ -11,13 +11,24 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Repository to get information from Database.
+ * Repository to get Events from Database.
  */
 @Repository
 public interface EventRepo extends JpaRepository<Event, UUID> {
 
+    /**
+     * Get all events between given timestamps
+     * @param timestamp exclusive
+     * @param timestamp2 inclusive
+     * @return List of Events
+     */
     List<Event> findAllByTimestampBetween(LocalDateTime timestamp, LocalDateTime timestamp2);
 
+    /**
+     * Query all event before the given timestamps
+     * @param timestamp inclusive
+     * @return List of Events
+     */
     @Query("select e from Event e where e.timestamp <= :timestamp")
     List<Event> findAllWithBeforeTimestamp(@Param("timestamp") LocalDateTime timestamp);
 }

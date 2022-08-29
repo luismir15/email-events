@@ -14,12 +14,19 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * JPA Repo test class. Main focus of these test cases is to check the size of the
+ * returned list and to verify their ids.
+ */
 @DataJpaTest
 class EventRepoTest {
 
     @Autowired
     private EventRepo eventRepo;
 
+    /**
+     * Test if all Events are returned between timestamps.
+     */
     @Test
     void whenFindAllByTimestampBetween_ThenReturnEvents() {
         List<Event> result = eventRepo.findAllByTimestampBetween(
@@ -33,6 +40,9 @@ class EventRepoTest {
                 .allMatch(id -> Arrays.asList(result.get(0).getId(), result.get(1).getId()).contains(id)));
     }
 
+    /**
+     * Test if all Events are returned before given timestamp.
+     */
     @Test
     void findAllWithBeforeTimestamp() {
 
