@@ -66,7 +66,9 @@ public class EventServiceImpl implements EventService {
     }
 
     /**
-     * @return
+     * Summarize all events to count clicks and open
+     * @param eventList filtered events
+     * @return Summary of events click and open
      */
     @Override
     public Summary getEventSummary(List<Event> eventList) {

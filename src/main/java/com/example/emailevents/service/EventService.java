@@ -24,5 +24,10 @@ public interface EventService {
      */
      List<Event> getEvents(String action, String recipient, String timestamp);
 
+    /**
+     * Summarize all events to count clicks and open
+     * @param eventList filtered events
+     * @return Summary of events click and open
+     */
      Summary getEventSummary(List<Event> eventList);
 }
