@@ -1,0 +1,30 @@
+
+server:
+  port: 9001
+
+spring:
+  datasource:
+    url: jdbc:h2:file:./src/test/resources/db/email-event-db
+    username: sa
+    password: password
+    driverClassName: org.h2.Driver
+
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    show-sql: false
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        temp:
+          use_jdbc_metadata_defaults: false
+        jdbc:
+          lob:
+            non_contextual_creation: true
+    defer-datasource-initialization: true
+
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:db/schema/test_email-events-schema.sql
+      data-locations: classpath:db/data/test_import.sql
