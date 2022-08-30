@@ -1,10 +1,11 @@
 package com.example.emailevents.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -16,11 +17,34 @@ import java.util.List;
 public class Message {
 
     private String message;
+    private int httpStatus;
+    private String stackTrace;
+    private List<ValidationError> validationErrorList;
+
+    public Message(String message, int httpStatus) {
+        this.message = message;
+        this.httpStatus = httpStatus;
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    private static class ValidationError {
+        private String field;
+        private String message;
+    }
+
+    public void addValidationError(String field, String message) {
+        if (Objects.isNull(validationErrorList)) {
+            validationErrorList = new ArrayList<>();
+        }
+
+        validationErrorList.add(new ValidationError(field, message));
+    }
+
 
     private Event event;
-
     private List<Event> eventList;
-
     private Summary summary;
 
     public Message(String message) {

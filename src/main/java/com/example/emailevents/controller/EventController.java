@@ -1,14 +1,21 @@
 package com.example.emailevents.controller;
 
+import com.example.emailevents.exception.NoSuchElementFoundException;
 import com.example.emailevents.model.Event;
 import com.example.emailevents.model.Message;
 import com.example.emailevents.model.Summary;
 import com.example.emailevents.service.EventService;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.WebRequest;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -19,9 +26,12 @@ import java.util.Objects;
 @RequestMapping("api/email")
 public class EventController {
 
-    private final EventService eventService;
+    public static final String TRACE = "trace";
 
-    private List<Event> eventList;
+    @Value("${reflectoring.trace:false}")
+    private boolean printStackTrace;
+
+    private final EventService eventService;
 
     /**
      * Constructor autowiring
@@ -61,6 +71,17 @@ public class EventController {
                 new Message("successfully added event", event),
                 HttpStatus.OK
         );
+    }
+
+    /**
+     * Add incoming events
+     *
+     * @param event obj from client request.
+     * @return response entity
+     */
+    @PostMapping(value = "/events/v2")
+    public Event addEventV2(@RequestBody @Validated Event event) {
+        return eventService.insertEvent(event);
     }
 
     @GetMapping(value = "/events")
@@ -122,5 +143,82 @@ public class EventController {
 
             return new ResponseEntity<>(new Message(), HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @ExceptionHandler(NoSuchElementFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseEntity<Message> handleItemNotFoundException(
+            NoSuchElementFoundException exception,
+            WebRequest request
+    ) {
+        return buildErrorResponse(exception, HttpStatus.NOT_FOUND, request);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+    public ResponseEntity<Message> handleMethodArgumentNotValid(
+            MethodArgumentNotValidException ex,
+            WebRequest request
+    ) {
+        Message errorResponse = new Message(
+                "Validation error. Check 'errors' field for details.",
+                HttpStatus.UNPROCESSABLE_ENTITY.value()
+        );
+
+        for (FieldError fieldError : ex.getBindingResult().getFieldErrors()) {
+            errorResponse.addValidationError(fieldError.getField(),
+                    fieldError.getDefaultMessage());
+        }
+        return ResponseEntity.unprocessableEntity().body(errorResponse);
+    }
+
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ResponseEntity<Message> handleAllUncaughtException(
+            Exception exception,
+            WebRequest request){
+
+        return buildErrorResponse(
+                exception,
+                "Unknown error occurred",
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                request
+        );
+    }
+
+    private ResponseEntity<Message> buildErrorResponse(
+            Exception exception,
+            HttpStatus httpStatus,
+            WebRequest request
+    ) {
+        return buildErrorResponse(
+                exception,
+                exception.getMessage(),
+                httpStatus,
+                request);
+    }
+
+    private ResponseEntity<Message> buildErrorResponse(
+            Exception exception,
+            String message,
+            HttpStatus httpStatus,
+            WebRequest request
+    ) {
+        Message errorResponse = new Message(
+                exception.getMessage(),
+                httpStatus.value()
+        );
+
+        if(printStackTrace && isTraceOn(request)){
+            errorResponse.setStackTrace(ExceptionUtils.getStackTrace(exception));
+        }
+        return ResponseEntity.status(httpStatus).body(errorResponse);
+    }
+
+    private boolean isTraceOn(WebRequest request) {
+        String [] value = request.getParameterValues(TRACE);
+        return Objects.nonNull(value)
+                && value.length > 0
+                && value[0].contentEquals("true");
     }
 }
