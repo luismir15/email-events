@@ -48,8 +48,6 @@ public class EventController {
             );
         }
 
-        event.setTimestamp(LocalDateTime.now());
-
         Event validatedEvent = eventService.insertEvent(event);
 
         if (validatedEvent == null) {

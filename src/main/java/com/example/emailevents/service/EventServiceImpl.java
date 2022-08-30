@@ -32,6 +32,8 @@ public class EventServiceImpl implements EventService {
     @Override
     public Event insertEvent(Event event) {
 
+        event.setTimestamp(LocalDateTime.now());
+
         if (validateFields(event))
             return eventRepo.save(event);
         else
