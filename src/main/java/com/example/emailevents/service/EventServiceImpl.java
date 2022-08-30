@@ -15,11 +15,25 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.regex.Pattern;
 
+/**
+ * Event service implementation. Aside from overriding the
+ * interface method, this class will hold private methods
+ * which will validate the information given from the
+ * controller. The service will validate each given information,
+ * if such filters are to be erroneous, the service will return
+ * null. If the service received an empty list for the GET request,
+ * it will throw an exception that the events were not found.
+ */
 @Service
 public class EventServiceImpl implements EventService {
 
     private final EventRepo eventRepo;
 
+    /**
+     * Constructor autowiring
+     *
+     * @param eventRepo interface
+     */
     @Autowired
     public EventServiceImpl(EventRepo eventRepo) {
         this.eventRepo = eventRepo;
@@ -47,7 +61,7 @@ public class EventServiceImpl implements EventService {
      * @param action    click or open
      * @param recipient client email
      * @param timestamp date and time of event
-     * @return
+     * @return List of Events based on filters passed.
      */
     @Override
     public List<Event> getEvents(String action, String recipient, String timestamp) {
@@ -77,27 +91,14 @@ public class EventServiceImpl implements EventService {
 
     /**
      * Summarize all events to count clicks and open
+     *
      * @param eventList filtered events
      * @return Summary of events click and open
      */
     @Override
     public Summary getEventSummary(List<Event> eventList) {
 
-        Event event = new Event();
-        event.setSummary(new Summary());
-        long totalClicks = eventList
-                .stream()
-                .filter(clicks -> clicks.getAction().equals(Constants.EVENT_CLICK))
-                .count();
-        long totalOpens = eventList
-                .stream()
-                .filter(open -> open.getAction().equals(Constants.EVENT_OPEN))
-                .count();
-
-        event.getSummary().setClick(new Summary.Click(totalClicks));
-        event.getSummary().setOpen(new Summary.Open(totalOpens));
-
-        return event.getSummary();
+        return countClickAndOpen(eventList);
     }
 
     /**
@@ -110,7 +111,7 @@ public class EventServiceImpl implements EventService {
     public Summary getEventSummaryByRecipient(String recipient) {
 
         if (StringUtils.isNotBlank(recipient)) {
-            if (!emailPatternMatch(recipient, Constants.EVENT_EMAIL_PATTERN)) {
+            if (!emailPatternMatch(recipient)) {
                 return null;
             }
         }
@@ -148,17 +149,18 @@ public class EventServiceImpl implements EventService {
 
     /**
      * Method to verify is given email is valid with an @ symbol.
+     *
      * @param email of event
-     * @param pattern to match email
      * @return true or false
      */
-    private boolean emailPatternMatch(String email, String pattern) {
+    private boolean emailPatternMatch(String email) {
 
-        return Pattern.compile(pattern).matcher(email).matches();
+        return Pattern.compile(Constants.EVENT_EMAIL_PATTERN).matcher(email).matches();
     }
 
     /**
      * Validate if action and recipient are correctly entered
+     *
      * @param event obj
      * @return true or false
      */
@@ -173,11 +175,17 @@ public class EventServiceImpl implements EventService {
 
         String recipient = event.getRecipient();
         if (StringUtils.isNotBlank(recipient))
-            return emailPatternMatch(event.getRecipient(), Constants.EVENT_EMAIL_PATTERN);
+            return emailPatternMatch(event.getRecipient());
 
         return true;
     }
 
+    /**
+     * Count click and open based on list of events passed
+     *
+     * @param eventList list
+     * @return Summary of Events
+     */
     private Summary countClickAndOpen(List<Event> eventList) {
 
         Event event = new Event();
@@ -197,6 +205,12 @@ public class EventServiceImpl implements EventService {
         return event.getSummary();
     }
 
+    /**
+     * Converter to turn a String to a LocalDateTime obj.
+     *
+     * @param timestamp LocalDateTime obj
+     * @return Parsed LocalDateTime obj
+     */
     private LocalDateTime convertStringToLdt(String timestamp) {
 
         String updatedTimestampString = timestamp.replace('T', ' ');
