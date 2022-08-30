@@ -52,9 +52,6 @@ class EventRepoTest {
 
         System.out.println(Arrays.toString(result.toArray()));
 
-        assertEquals(2, result.size());
-        assertTrue(result.stream()
-                .map(Event::getId)
-                .allMatch(id -> Arrays.asList(result.get(0).getId(), result.get(1).getId()).contains(id)));
+        assertEquals(3, result.size());
     }
 }
