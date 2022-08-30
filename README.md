@@ -153,11 +153,11 @@ Before getting started, the IDE used to build this project was IntelliJ IDEA. De
 
 Run the service in the IDE and then use your favorite tool to make HTTP requests (I use Postman in my case).
 
-![IntelliJ running the Spring Project](README%20cf84e8396c4b4fd0b48c8026950878e6/Untitled.png)
+![IntelliJ running the Spring Project](README/Untitled.png)
 
 IntelliJ running the Spring Project
 
-![Postman conducting request to server](README%20cf84e8396c4b4fd0b48c8026950878e6/Untitled%201.png)
+![Postman conducting request to server](README/Untitled%201.png)
 
 Postman conducting request to server
 
