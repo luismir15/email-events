@@ -17,11 +17,17 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * REST Controller to process incoming Event requests. This
+ * Controller will POST an event, GET events and GET summary of
+ * events. There will be ExceptionHandlers which Spring will
+ * recognize if an exception occurred. If such error were to happen
+ * a ResponseEntity will be returned with a Message class which will
+ * notify the client of the issue.
+ */
 @RestController
 @RequestMapping("api/email")
 public class EventController {
@@ -84,6 +90,13 @@ public class EventController {
         return eventService.insertEvent(event);
     }
 
+    /**
+     * GET request to retrieve a List of events based on filter params
+     * @param action click or open
+     * @param recipient client email
+     * @param timestamp time and date of event
+     * @return List of Events
+     */
     @GetMapping(value = "/events")
     public ResponseEntity<Message> getEvents(
             @RequestParam(required = false) String action,
@@ -103,6 +116,13 @@ public class EventController {
         return new ResponseEntity<>(new Message(filteredEventList), HttpStatus.OK);
     }
 
+    /**
+     * GET request to retrieve a List of events based on filter params
+     * @param action click or open
+     * @param recipient client email
+     * @param timestamp time and date of event
+     * @return List of Events
+     */
     @GetMapping(value = "/events/v2")
     public List<Event> getEventsV2(
             @RequestParam(required = false) String action,
@@ -134,6 +154,14 @@ public class EventController {
 //        );
 //   }
 
+    /**
+     * GET request to summarize click and open of returned list of events
+     *
+     * @param recipient client email
+     * @param timestamp start date
+     * @param timestamp2 end date
+     * @return Summary of Events
+     */
     @GetMapping(value = "/summary")
     public ResponseEntity<Message> getEventSummaryByRecipient(
             @RequestParam(required = false) String recipient,
@@ -154,6 +182,14 @@ public class EventController {
         }
     }
 
+    /**
+     * GET request to summarize click and open of returned list of events
+     *
+     * @param recipient client email
+     * @param timestamp start date
+     * @param timestamp2 end date
+     * @return Summary of Events
+     */
     @GetMapping(value = "/summary/v2")
     public ResponseEntity<Message> getEventSummary(
             @RequestParam(required = false) String recipient,
@@ -174,20 +210,34 @@ public class EventController {
         }
     }
 
+    /**
+     * Custom exception handler that will throw a NoSuchElementFoundException
+     * if the Repo could to locate events.
+     *
+     * @param exception NoSuchElementFoundException
+     * @param request GET /events and /summary
+     * @return ResponseEntity with exception message and status code.
+     */
     @ExceptionHandler(NoSuchElementFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<Message> handleItemNotFoundException(
             NoSuchElementFoundException exception,
             WebRequest request
     ) {
-        return buildErrorResponse(exception, HttpStatus.NOT_FOUND, request);
+        return buildErrorResponse(exception, request);
     }
 
+    /**
+     * Exception handler that will throw a MethodArgumentNotValidException
+     * for invalid arguments passed in the request.
+     *
+     * @param ex MethodArgumentNotValidException
+     * @return ResponseEntity with exception messages and status code
+     */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
     public ResponseEntity<Message> handleMethodArgumentNotValid(
-            MethodArgumentNotValidException ex,
-            WebRequest request
+            MethodArgumentNotValidException ex
     ) {
         Message errorResponse = new Message(
                 "Validation error. Check 'errors' field for details.",
@@ -201,6 +251,13 @@ public class EventController {
         return ResponseEntity.unprocessableEntity().body(errorResponse);
     }
 
+    /**
+     * Exception handler that will throw any other uncaught exception.
+     *
+     * @param exception general Exception
+     * @param request all request
+     * @return ResponseEntity with unknown exception message and status code
+     */
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseEntity<Message> handleAllUncaughtException(
@@ -209,32 +266,45 @@ public class EventController {
 
         return buildErrorResponse(
                 exception,
-                "Unknown error occurred",
-                HttpStatus.INTERNAL_SERVER_ERROR,
                 request
         );
     }
 
+
+    /**
+     * This method will build the error message that will be
+     * returned to the client.
+     *
+     * @param exception Exception
+     * @param request   all request
+     * @return Build Message in ResponseEntity
+     */
     private ResponseEntity<Message> buildErrorResponse(
             Exception exception,
-            HttpStatus httpStatus,
             WebRequest request
     ) {
         return buildErrorResponse(
                 exception,
-                exception.getMessage(),
-                httpStatus,
+                HttpStatus.NOT_FOUND,
                 request);
     }
 
+    /**
+     * This method will build the error message that will be
+     * returned to the client.
+     *
+     * @param exception Exception
+     * @param httpStatus HttpStatus
+     * @param request all request
+     * @return Build Message in ResponseEntity
+     */
     private ResponseEntity<Message> buildErrorResponse(
             Exception exception,
-            String message,
             HttpStatus httpStatus,
             WebRequest request
     ) {
         Message errorResponse = new Message(
-                exception.getMessage(),
+                exception.getMessage() ,
                 httpStatus.value()
         );
 
@@ -244,6 +314,12 @@ public class EventController {
         return ResponseEntity.status(httpStatus).body(errorResponse);
     }
 
+    /**
+     * Boolean method verify is the stack trace is triggered.
+     *
+     * @param request WebRequest
+     * @return true or false
+     */
     private boolean isTraceOn(WebRequest request) {
         String [] value = request.getParameterValues(TRACE);
         return Objects.nonNull(value)

@@ -1,6 +1,13 @@
 
 server:
   port: 9001
+  error:
+    include-message: always
+    include-binding-errors: always
+    include-stacktrace: on_param
+    include-exception: true
+reflectoring:
+  trace: true
 
 spring:
   datasource:
