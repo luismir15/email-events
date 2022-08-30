@@ -11,7 +11,9 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Repository to get Events from Database.
+ * Repository to get Events from Database. This interface will
+ * be extending the JpaRepository API to fetch events with id
+ * of type UUID.
  */
 @Repository
 public interface EventRepo extends JpaRepository<Event, UUID> {
