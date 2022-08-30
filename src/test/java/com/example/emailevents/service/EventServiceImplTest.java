@@ -120,4 +120,18 @@ class EventServiceImplTest {
 
         assertThat(summary).isNotNull();
     }
+
+    @Test
+    void getEventSummaryByRecipient() {
+
+        String recipient = "eric@piloto151.com";
+        Event event = new Event();
+        event.setRecipient(recipient);
+
+        Mockito.when(eventRepo.findAll(Example.of(event))).thenReturn(new ArrayList<>());
+        Summary summary = eventService.getEventSummaryByRecipient(recipient);
+        Mockito.verify(eventRepo).findAll(Example.of(event));
+
+        assertThat(summary).isNotNull();
+    }
 }

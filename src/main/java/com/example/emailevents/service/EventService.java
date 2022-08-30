@@ -30,4 +30,19 @@ public interface EventService {
      * @return Summary of events click and open
      */
      Summary getEventSummary(List<Event> eventList);
+
+    /**
+     * Get event summary based on filter
+     * @param recipient client email
+     * @return Summary of events click and open
+     */
+     Summary getEventSummaryByRecipient(String recipient);
+
+    /**
+     * Get event summary based on filter
+     * @param timestamp
+     * @param timestamp2
+     * @return Summary of events click and open
+     */
+    Summary getEventSummaryByTimestamps(String timestamp, String timestamp2);
 }

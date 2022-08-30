@@ -91,6 +91,52 @@ public class EventServiceImpl implements EventService {
     }
 
     /**
+     * Get event summary based on filter
+     *
+     * @param recipient  client email
+     * @return Summary of events click and open
+     */
+    @Override
+    public Summary getEventSummaryByRecipient(String recipient) {
+
+        if (StringUtils.isNotBlank(recipient)) {
+            if (!emailPatternMatch(recipient, Constants.EVENT_EMAIL_PATTERN)) {
+                return null;
+            }
+        }
+
+        Event event = new Event();
+        event.setRecipient(recipient);
+        List<Event> eventList = eventRepo.findAll(Example.of(event));
+
+        return countClickAndOpen(eventList);
+    }
+
+    /**
+     * Get event summary based on filter
+     *
+     * @param timestamp start date
+     * @param timestamp2 end date
+     * @return Summary of events click and open
+     */
+    @Override
+    public Summary getEventSummaryByTimestamps(String timestamp, String timestamp2) {
+
+        LocalDateTime localDateTime;
+        LocalDateTime localDateTime2;
+
+        if (StringUtils.isNotBlank(timestamp) && StringUtils.isNotBlank(timestamp2)) {
+            localDateTime = convertStringToLdt(timestamp);
+            localDateTime2 = convertStringToLdt(timestamp2);
+        } else {
+            return null;
+        }
+        List<Event> eventList = eventRepo.findAllByTimestampBetween(localDateTime, localDateTime2);
+
+        return countClickAndOpen(eventList);
+    }
+
+    /**
      * Method to verify is given email is valid with an @ symbol.
      * @param email of event
      * @param pattern to match email
@@ -120,5 +166,31 @@ public class EventServiceImpl implements EventService {
             return emailPatternMatch(event.getRecipient(), Constants.EVENT_EMAIL_PATTERN);
 
         return true;
+    }
+
+    private Summary countClickAndOpen(List<Event> eventList) {
+
+        Event event = new Event();
+        event.setSummary(new Summary());
+        long totalClicks = eventList
+                .stream()
+                .filter(clicks -> clicks.getAction().equals(Constants.EVENT_CLICK))
+                .count();
+        long totalOpens = eventList
+                .stream()
+                .filter(open -> open.getAction().equals(Constants.EVENT_OPEN))
+                .count();
+
+        event.getSummary().setClick(new Summary.Click(totalClicks));
+        event.getSummary().setOpen(new Summary.Open(totalOpens));
+
+        return event.getSummary();
+    }
+
+    private LocalDateTime convertStringToLdt(String timestamp) {
+
+        String updatedTimestampString = timestamp.replace('T', ' ');
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SS");
+        return LocalDateTime.parse(updatedTimestampString, formatter);
     }
 }
