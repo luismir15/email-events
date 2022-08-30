@@ -17,7 +17,7 @@ public interface EventService {
      * @param action click or open
      * @param recipient client email
      * @param timestamp date and time of event
-     * @return
+     * @return List of Events based on filters passed.
      */
      List<Event> getEvents(String action, String recipient, String timestamp);
 
@@ -37,9 +37,9 @@ public interface EventService {
 
     /**
      * Get event summary based on filter
-     * @param timestamp
-     * @param timestamp2
-     * @return Summary of events click and open
+     * @param timestamp start date
+     * @param timestamp2 end date
+     * @return Summary of events based on click and open
      */
     Summary getEventSummaryByTimestamps(String timestamp, String timestamp2);
 }
