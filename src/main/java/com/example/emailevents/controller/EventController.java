@@ -55,38 +55,7 @@ public class EventController {
      * @return response entity
      */
     @PostMapping(value = "/events")
-    public ResponseEntity<Message> addEvent(@RequestBody(required = false) Event event) {
-
-        if (event == null || StringUtils.isBlank(event.getAction()) || StringUtils.isBlank(event.getRecipient())) {
-            return new ResponseEntity<>(
-                    new Message("request body is null or make sure that you added action and recipient"),
-                    HttpStatus.BAD_REQUEST
-            );
-        }
-
-        Event validatedEvent = eventService.insertEvent(event);
-
-        if (validatedEvent == null) {
-            return new ResponseEntity<>(
-                    new Message("request body is null or make sure that you added action and recipient"),
-                    HttpStatus.BAD_REQUEST
-            );
-        }
-
-        return new ResponseEntity<>(
-                new Message("successfully added event", event),
-                HttpStatus.OK
-        );
-    }
-
-    /**
-     * Add incoming events
-     *
-     * @param event obj from client request.
-     * @return response entity
-     */
-    @PostMapping(value = "/events/v2")
-    public Event addEventV2(@RequestBody @Validated Event event) {
+    public Event addEvent(@RequestBody @Validated Event event) {
         return eventService.insertEvent(event);
     }
 
@@ -98,61 +67,13 @@ public class EventController {
      * @return List of Events
      */
     @GetMapping(value = "/events")
-    public ResponseEntity<Message> getEvents(
-            @RequestParam(required = false) String action,
-            @RequestParam(required = false) String recipient,
-            @RequestParam(required = false) String timestamp
-    ) {
-
-        List<Event> filteredEventList = eventService.getEvents(action, recipient, timestamp);
-
-        if (filteredEventList == null) {
-            return new ResponseEntity<>(
-                    new Message("please review query params input"),
-                    HttpStatus.BAD_REQUEST
-            );
-        }
-
-        return new ResponseEntity<>(new Message(filteredEventList), HttpStatus.OK);
-    }
-
-    /**
-     * GET request to retrieve a List of events based on filter params
-     * @param action click or open
-     * @param recipient client email
-     * @param timestamp time and date of event
-     * @return List of Events
-     */
-    @GetMapping(value = "/events/v2")
-    public List<Event> getEventsV2(
+    public List<Event> getEvents(
             @RequestParam(required = false) String action,
             @RequestParam(required = false) String recipient,
             @RequestParam(required = false) String timestamp
     ) {
         return eventService.getEvents(action, recipient, timestamp);
     }
-
-   //@GetMapping(value = "/summary")
-//   public ResponseEntity<Message> getEventSummary(
-//           @RequestParam(required = false) String action,
-//           @RequestParam(required = false) String recipient,
-//           @RequestParam(required = false) String timestamp
-//   ) {
-//        List<Event> eventListSummary = Objects.requireNonNull(getEvents(action, recipient, timestamp).getBody()).getEventList();
-//        if (eventListSummary == null || eventListSummary.isEmpty()) {
-//            return new ResponseEntity<>(
-//                    new Message("please review query params"),
-//                    HttpStatus.BAD_REQUEST
-//            );
-//        }
-//
-//        Summary summary = eventService.getEventSummary(eventListSummary);
-//
-//        return new ResponseEntity<>(
-//                new Message(summary),
-//                HttpStatus.OK
-//        );
-//   }
 
     /**
      * GET request to summarize click and open of returned list of events
@@ -163,34 +84,6 @@ public class EventController {
      * @return Summary of Events
      */
     @GetMapping(value = "/summary")
-    public ResponseEntity<Message> getEventSummaryByRecipient(
-            @RequestParam(required = false) String recipient,
-            @RequestParam(required = false) String timestamp,
-            @RequestParam(required = false) String timestamp2
-    ) {
-
-        if (StringUtils.isNotBlank(recipient) && (StringUtils.isBlank(timestamp) && StringUtils.isBlank(timestamp2))) {
-            Summary recipientSummary = eventService.getEventSummaryByRecipient(recipient);
-            return new ResponseEntity<>(new Message(recipientSummary), HttpStatus.OK);
-        }
-        else if ((StringUtils.isNotBlank(timestamp) && StringUtils.isNotBlank(timestamp2)) && StringUtils.isBlank(recipient) ) {
-            Summary timestampSummary = eventService.getEventSummaryByTimestamps(timestamp, timestamp2);
-            return new ResponseEntity<>(new Message(timestampSummary), HttpStatus.OK);
-        } else {
-
-            return new ResponseEntity<>(new Message(), HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    /**
-     * GET request to summarize click and open of returned list of events
-     *
-     * @param recipient client email
-     * @param timestamp start date
-     * @param timestamp2 end date
-     * @return Summary of Events
-     */
-    @GetMapping(value = "/summary/v2")
     public Summary getEventSummary(
             @RequestParam(required = false) String recipient,
             @RequestParam(required = false) String timestamp,
