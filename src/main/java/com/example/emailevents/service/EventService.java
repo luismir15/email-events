@@ -2,9 +2,6 @@ package com.example.emailevents.service;
 
 import com.example.emailevents.model.Event;
 import com.example.emailevents.model.Summary;
-import org.springframework.web.bind.annotation.RequestParam;
-
-import java.time.LocalDateTime;
 import java.util.List;
 
 public interface EventService {
