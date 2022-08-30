@@ -56,6 +56,7 @@ public class EventServiceImpl implements EventService {
         if (!StringUtils.isBlank(timestamp)) {
             String updatedTimestampString = timestamp.replace('T', ' ');
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SS");
+            //TODO: handle parsing exception
             event.setTimestamp(LocalDateTime.parse(updatedTimestampString, formatter));
         }
 
