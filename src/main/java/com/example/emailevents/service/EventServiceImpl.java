@@ -1,5 +1,6 @@
 package com.example.emailevents.service;
 
+import com.example.emailevents.exception.NoSuchElementFoundException;
 import com.example.emailevents.model.Event;
 import com.example.emailevents.model.Summary;
 import com.example.emailevents.repo.EventRepo;
@@ -62,8 +63,14 @@ public class EventServiceImpl implements EventService {
             event.setTimestamp(LocalDateTime.parse(updatedTimestampString, formatter));
         }
 
-        if (validateFields(event))
-            return eventRepo.findAll(Example.of(event));
+        if (validateFields(event)) {
+            List<Event> eventList = eventRepo.findAll(Example.of(event));
+            if (eventList.isEmpty())
+                throw new NoSuchElementFoundException("No elements found");
+            else
+                return eventList;
+        }
+
         else
             return null;
     }

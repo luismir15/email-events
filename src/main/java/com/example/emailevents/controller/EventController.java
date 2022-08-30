@@ -103,30 +103,59 @@ public class EventController {
         return new ResponseEntity<>(new Message(filteredEventList), HttpStatus.OK);
     }
 
+    @GetMapping(value = "/events/v2")
+    public List<Event> getEventsV2(
+            @RequestParam(required = false) String action,
+            @RequestParam(required = false) String recipient,
+            @RequestParam(required = false) String timestamp
+    ) {
+        return eventService.getEvents(action, recipient, timestamp);
+    }
+
    //@GetMapping(value = "/summary")
-   public ResponseEntity<Message> getEventSummary(
-           @RequestParam(required = false) String action,
-           @RequestParam(required = false) String recipient,
-           @RequestParam(required = false) String timestamp
-   ) {
-        List<Event> eventListSummary = Objects.requireNonNull(getEvents(action, recipient, timestamp).getBody()).getEventList();
-        if (eventListSummary == null || eventListSummary.isEmpty()) {
-            return new ResponseEntity<>(
-                    new Message("please review query params"),
-                    HttpStatus.BAD_REQUEST
-            );
-        }
-
-        Summary summary = eventService.getEventSummary(eventListSummary);
-
-        return new ResponseEntity<>(
-                new Message(summary),
-                HttpStatus.OK
-        );
-   }
+//   public ResponseEntity<Message> getEventSummary(
+//           @RequestParam(required = false) String action,
+//           @RequestParam(required = false) String recipient,
+//           @RequestParam(required = false) String timestamp
+//   ) {
+//        List<Event> eventListSummary = Objects.requireNonNull(getEvents(action, recipient, timestamp).getBody()).getEventList();
+//        if (eventListSummary == null || eventListSummary.isEmpty()) {
+//            return new ResponseEntity<>(
+//                    new Message("please review query params"),
+//                    HttpStatus.BAD_REQUEST
+//            );
+//        }
+//
+//        Summary summary = eventService.getEventSummary(eventListSummary);
+//
+//        return new ResponseEntity<>(
+//                new Message(summary),
+//                HttpStatus.OK
+//        );
+//   }
 
     @GetMapping(value = "/summary")
     public ResponseEntity<Message> getEventSummaryByRecipient(
+            @RequestParam(required = false) String recipient,
+            @RequestParam(required = false) String timestamp,
+            @RequestParam(required = false) String timestamp2
+    ) {
+
+        if (StringUtils.isNotBlank(recipient) && (StringUtils.isBlank(timestamp) && StringUtils.isBlank(timestamp2))) {
+            Summary recipientSummary = eventService.getEventSummaryByRecipient(recipient);
+            return new ResponseEntity<>(new Message(recipientSummary), HttpStatus.OK);
+        }
+        else if ((StringUtils.isNotBlank(timestamp) && StringUtils.isNotBlank(timestamp2)) && StringUtils.isBlank(recipient) ) {
+            Summary timestampSummary = eventService.getEventSummaryByTimestamps(timestamp, timestamp2);
+            return new ResponseEntity<>(new Message(timestampSummary), HttpStatus.OK);
+        } else {
+
+            return new ResponseEntity<>(new Message(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping(value = "/summary/v2")
+    public ResponseEntity<Message> getEventSummary(
             @RequestParam(required = false) String recipient,
             @RequestParam(required = false) String timestamp,
             @RequestParam(required = false) String timestamp2
