@@ -52,7 +52,7 @@ public class EventServiceImpl implements EventService {
         if (validateFields(event))
             return eventRepo.save(event);
         else
-            return null;
+            throw new RuntimeException("cannot validate fields");
     }
 
     /**
@@ -86,7 +86,7 @@ public class EventServiceImpl implements EventService {
         }
 
         else
-            return null;
+            throw new NoSuchElementFoundException("No elements found");
     }
 
     /**
@@ -140,7 +140,7 @@ public class EventServiceImpl implements EventService {
             localDateTime = convertStringToLdt(timestamp);
             localDateTime2 = convertStringToLdt(timestamp2);
         } else {
-            return null;
+            throw new RuntimeException("add start date and/or end date");
         }
         List<Event> eventList = eventRepo.findAllByTimestampBetween(localDateTime, localDateTime2);
 

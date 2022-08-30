@@ -191,22 +191,20 @@ public class EventController {
      * @return Summary of Events
      */
     @GetMapping(value = "/summary/v2")
-    public ResponseEntity<Message> getEventSummary(
+    public Summary getEventSummary(
             @RequestParam(required = false) String recipient,
             @RequestParam(required = false) String timestamp,
             @RequestParam(required = false) String timestamp2
     ) {
 
         if (StringUtils.isNotBlank(recipient) && (StringUtils.isBlank(timestamp) && StringUtils.isBlank(timestamp2))) {
-            Summary recipientSummary = eventService.getEventSummaryByRecipient(recipient);
-            return new ResponseEntity<>(new Message(recipientSummary), HttpStatus.OK);
+            return eventService.getEventSummaryByRecipient(recipient);
         }
         else if ((StringUtils.isNotBlank(timestamp) && StringUtils.isNotBlank(timestamp2)) && StringUtils.isBlank(recipient) ) {
-            Summary timestampSummary = eventService.getEventSummaryByTimestamps(timestamp, timestamp2);
-            return new ResponseEntity<>(new Message(timestampSummary), HttpStatus.OK);
+            return eventService.getEventSummaryByTimestamps(timestamp, timestamp2);
         } else {
-
-            return new ResponseEntity<>(new Message(), HttpStatus.BAD_REQUEST);
+            throw new NoSuchElementFoundException("could calculate summary. please review if email or dates are valid" +
+                    "also don't combine recipient with dates. use filters separately");
         }
     }
 
