@@ -2,6 +2,11 @@ package com.example.emailevents.model;
 
 import lombok.*;
 
+/**
+ * The Summary model will be given back to the client for
+ * the GET /summary request. It will the counts of open
+ * and click.
+ */
 @Getter
 @Setter
 @NoArgsConstructor

@@ -7,6 +7,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Message model to create custom message for POSTs and GETs request.
+ * This model will also have a roll when creating custom error message
+ * to return to the client.
+ */
 @Getter
 @Setter
 @NoArgsConstructor
