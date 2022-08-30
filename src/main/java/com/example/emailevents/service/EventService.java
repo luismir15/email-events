@@ -4,6 +4,10 @@ import com.example.emailevents.model.Event;
 import com.example.emailevents.model.Summary;
 import java.util.List;
 
+/**
+ * The EventService interface will be hold the roll of the business logic
+ * and to retrieve or add information to the repo.
+ */
 public interface EventService {
 
     /**
