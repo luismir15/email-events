@@ -7,7 +7,7 @@
 This web server can serve 2 types of email events, **open** and **click**. The server contains 3 routes: 
 
 1. `POST /events`: this route will handle posting events
-2. `GET /events`: this route will serve events back to a client as a whole or filtered by **action**, **recipient**, or **timestamp** query parameters. 
+2. `GET /events`: this route will serve events back to a client as a whole or filtered by **action**, **recipient**, or **timestamp** query parameters. Note: for timestamp you need to specify the extact time of the event. 
 3. `GET /summary`: this route will serve event count for each action (open, click) filtered by **recipient** or a **startDate/endDate** combination. 
 
 ## Data
