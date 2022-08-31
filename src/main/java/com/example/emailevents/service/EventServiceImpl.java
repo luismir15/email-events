@@ -175,7 +175,7 @@ public class EventServiceImpl implements EventService {
 
         String recipient = event.getRecipient();
         if (StringUtils.isNotBlank(recipient)) {
-            if (emailPatternMatch(event.getRecipient())) {
+            if (!emailPatternMatch(event.getRecipient())) {
                 throw new RuntimeException("invalid email");
             }
         }
