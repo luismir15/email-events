@@ -4,8 +4,6 @@
 
 # About
 
----
-
 This web server can serve 2 types of email events, **open** and **click**. The server contains 3 routes: 
 
 1. `POST /events`: this route will handle posting events
@@ -14,11 +12,9 @@ This web server can serve 2 types of email events, **open** and **click**. The s
 
 ## Data
 
----
-
 The structure of email events will be the following:
 
-```json
+```
 // Event
 {
   id: UUID,
@@ -31,7 +27,7 @@ The structure of email events will be the following:
 
 Example
 
-```json
+```
 // Event
 {  
   id: "123e4567-e89b-12d3-a456-426614174000",
@@ -43,8 +39,6 @@ Example
 ```
 
 ## Request and Response
-
----
 
 Examples of request and response for each of the routes
 
@@ -126,8 +120,6 @@ Examples of request and response for each of the routes
 
 ## Built With
 
----
-
 The server was built with Spring Boot with Web and JPA dependencies. Spring Web will allow us to build a Restful API and JPA is the persistence API. Events will be persisted in an H2 local database. The main language is Java version 8. 
 
 - Java
@@ -139,8 +131,6 @@ The server was built with Spring Boot with Web and JPA dependencies. Spring Web 
 
 # Getting Started
 
----
-
 Before getting started, the IDE used to build this project was IntelliJ IDEA. Demos will be conducted using the IDE to run the server.  
 
 - Install any preferred IDE to run a Spring Boot Project.
@@ -148,8 +138,6 @@ Before getting started, the IDE used to build this project was IntelliJ IDEA. De
 - Clone this repo
 
 ## Usage
-
----
 
 Run the service in the IDE and then use your favorite tool to make HTTP requests (I use Postman in my case).
 
@@ -163,17 +151,15 @@ Postman conducting request to server
 
 # Solution
 
----
+Path to source code: src/main/java/com/example/emailevents
 
 The first step when completing this server was to plan how everything will look like in the backend. While thinking about this, I always have in mind of creating a server with Spring, if I am free to choose so. I am well-trained in Java and Spring, so it’s the first thing that comes to mind when choosing a technology freely. 
 
-Usually, the design pattern that I mostly picked is the DAO (Data Access Object) design pattern. I always start with the model and database. In this case, the model is the Event. With the event, I assumed that I could generate the ID and timestamp programmatically. In a real world scenario, a client will most likely not create a specific ID and add the time/date of the Event. After I know how the model will look like, I move on to the repo, which I would use the JpaRespository interface. The nice thing about this project is that there's no need for custom methods to be added, I can simply use the save() and findAll() methods. 
+Usually, the design pattern that I mostly picked is the DAO (Data Access Object) design pattern. I always start with the model and database. In this case, the model is the Event. With the event, I assumed that I could generate the ID and timestamp programmatically. In a real world scenario, a client will most likely not create a specific ID and add the time/date of the Event. After I know how the model will look like, I move on to the repo, which I would use the JpaRespository interface. The nice thing about this project is that there's no need for custom methods to be added, I can simply use the save() and findAll() methods. The Database that I'm using is a H2 local database. 
 
 Next, I move to the service layer. Here, I create an interface with all the main functionality that will be used, which is saving and retrieving events. The main focus here is to validate the Events. We don’t want to send any errors to the repository. If such error occur, an exception will be thrown or the method will return null. Finally, I create the controller which will hold the request mappings and exception handlers. If everything went well, then the client will receive a 200 status code. On the other hand, for any exceptions thrown, the client will be returned a Response Entity with a custom message specifying the error.     
 
 # Resources
-
----
 
 [Spring Boot With H2 Database | Baeldung](https://www.baeldung.com/spring-boot-h2-database)
 
