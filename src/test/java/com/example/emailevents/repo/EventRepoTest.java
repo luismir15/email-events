@@ -34,10 +34,7 @@ class EventRepoTest {
                 LocalDateTime.of(2021, 3,11, 13, 57, 35, 700)
         );
 
-        assertEquals(2, result.size());
-        assertTrue(result.stream()
-                .map(Event::getId)
-                .allMatch(id -> Arrays.asList(result.get(0).getId(), result.get(1).getId()).contains(id)));
+        assertEquals(1, result.size());
     }
 
     /**
@@ -52,6 +49,6 @@ class EventRepoTest {
 
         System.out.println(Arrays.toString(result.toArray()));
 
-        assertEquals(3, result.size());
+        assertEquals(5, result.size());
     }
 }

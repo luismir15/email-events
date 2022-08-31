@@ -77,7 +77,7 @@ class EventServiceImplTest {
 
         String action = "click";
         String recipient = "eric@piloto151.com";
-        String timestamp = "2021-02-11T08:57:35.78";
+        String timestamp = "2020-02-11T08:57:35.78";
 
         Event event = new Event();
         event.setAction(action);
@@ -86,39 +86,13 @@ class EventServiceImplTest {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SS");
         event.setTimestamp(LocalDateTime.parse(updatedTimestampString, formatter));
 
-        Mockito.when(eventRepo.findAll(Example.of(event))).thenReturn(new ArrayList<>());
+        Mockito.when(eventRepo.findAll(Example.of(event))).thenReturn(populateEvents());
 
         List<Event> actualEvents = eventService.getEvents(action, recipient, timestamp);
 
         Mockito.verify(eventRepo).findAll(Example.of(event));
 
         assertThat(actualEvents).isNotNull();
-    }
-
-    /**
-     * If given a list of events, it will return a summary of click and open.
-     */
-    @Test
-    void givenListOfEvent_whenGetEventSummary_thenReturnSummaryOfEvents() {
-
-        String action = "click";
-        String recipient = "eric@piloto151.com";
-        String timestamp = "2021-02-11T08:57:35.78";
-
-        Event event = new Event();
-        event.setAction(action);
-        event.setRecipient(recipient);
-        String updatedTimestampString = timestamp.replace('T', ' ');
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SS");
-        event.setTimestamp(LocalDateTime.parse(updatedTimestampString, formatter));
-
-        Mockito.when(eventRepo.findAll(Example.of(event))).thenReturn(new ArrayList<>());
-
-        List<Event> eventList = eventService.getEvents("click", "eric@piloto151.com", "2021-02-11T08:57:35.78");
-
-        Summary summary = eventService.getEventSummary(eventList);
-
-        assertThat(summary).isNotNull();
     }
 
     @Test
@@ -133,5 +107,13 @@ class EventServiceImplTest {
         Mockito.verify(eventRepo).findAll(Example.of(event));
 
         assertThat(summary).isNotNull();
+    }
+
+    private List<Event> populateEvents() {
+
+        List<Event> eventList = new ArrayList<>();
+        eventList.add(new Event());
+
+        return eventList;
     }
 }
