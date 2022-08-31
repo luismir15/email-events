@@ -112,7 +112,7 @@ public class EventServiceImpl implements EventService {
 
         if (StringUtils.isNotBlank(recipient)) {
             if (!emailPatternMatch(recipient)) {
-                return null;
+                throw new RuntimeException("invalid email");
             }
         }
 
@@ -169,13 +169,16 @@ public class EventServiceImpl implements EventService {
         String action = event.getAction();
         if (StringUtils.isNotBlank(action)) {
             if (!action.equals(Constants.EVENT_CLICK) & !action.equals(Constants.EVENT_OPEN)) {
-                return false;
+                throw new RuntimeException("action must be click or open");
             }
         }
 
         String recipient = event.getRecipient();
-        if (StringUtils.isNotBlank(recipient))
-            return emailPatternMatch(event.getRecipient());
+        if (StringUtils.isNotBlank(recipient)) {
+            if (emailPatternMatch(event.getRecipient())) {
+                throw new RuntimeException("invalid email");
+            }
+        }
 
         return true;
     }
